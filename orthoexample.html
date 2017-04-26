@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Cube</title>
+  <style>
+    body {
+      text-align: center;
+    }
+
+    canvas { 
+      width: 100%; 
+      height: 100%;
+      border: 1px solid black;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Liquid Three.js Cube</h1>
+  <p>Change the browser's window size.</p>
+  <script src="https://rawgithub.com/mrdoob/three.js/master/build/three.js"></script> <!-- Get the latest version of the Three.js library. -->
+  <script>
+    var scene = new THREE.Scene(); // Create a Three.js scene object.
+    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000); // Define the perspective camera's attributes.
+
+    var renderer = window.WebGLRenderingContext ? new THREE.WebGLRenderer() : new THREE.CanvasRenderer(); // Fallback to canvas renderer, if necessary.
+    renderer.setSize(window.innerWidth, window.innerHeight); // Set the size of the WebGL viewport.
+    document.body.appendChild(renderer.domElement); // Append the WebGL viewport to the DOM.
+
+    var geometry = new THREE.Geometry();
+    var material = new THREE.LineBasicMaterial({ color: 0x0000FF });
+    
+    geometry.vertices.push(new THREE.Vector3(-10, 0, 0));
+    geometry.vertices.push(new THREE.Vector3(0, 10, 0));
+    geometry.vertices.push(new THREE.Vector3(10, 0, 0));
+
+    var line = new THREE.Line(geometry, material);
+    scene.add(line);
+
+    camera.position.z = 50; // Move the camera away from the origin, down the positive z-axis.
+    renderer.render(scene, camera); // Each time we change the position of the cube object, we must re-render it.
+
+    var render = function () {  
+      requestAnimationFrame(render); // Call the render() function up to 60 times per second (i.e., up to 60 animation frames per second).
+    };
+
+    // render(); // Start the rendering of the animation frames.
+  </script>
+</body>
+</html>
