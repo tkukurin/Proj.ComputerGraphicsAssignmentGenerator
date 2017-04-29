@@ -38,7 +38,12 @@
     var line = new THREE.Line(geometry, material);
     scene.add(line);
 
+    var cameraHelper = new THREE.CameraHelper(camera);
+    scene.add(cameraHelper);
+
     camera.position.z = 50; // Move the camera away from the origin, down the positive z-axis.
+    camera.position.x = 20;
+    camera.position.y = 20;
     renderer.render(scene, camera); // Each time we change the position of the cube object, we must re-render it.
 
     var render = function () {  

@@ -8,6 +8,10 @@
 <script src="https://rawgithub.com/mrdoob/three.js/master/examples/js/controls/TrackballControls.js"></script>
 <script src="https://rawgithub.com/mrdoob/three.js/master/examples/js/controls/OrthographicTrackballControls.js"></script>
 
+</head>
+
+<body>
+    
 <script type="text/javascript">
     function buildAxis( src, dst, colorHex, dashed ) {
         var geom = new THREE.Geometry(),
@@ -41,78 +45,75 @@
         return axes;
     }
 
-    function onLoad() {
-        var canUpdate = false;
+    var canUpdate = true;
 
-        const renderer = new THREE.WebGLRenderer({ antialias: true });
-        document.body.appendChild(renderer.domElement);
-        renderer.setSize( window.innerWidth, window.innerHeight );
-        renderer.setClearColor( 0xeeeeee, 1.0 );
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    document.body.appendChild(renderer.domElement);
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.setClearColor( 0xeeeeee, 1.0 );
 
-        const scene = new THREE.Scene();
-        const camera = new THREE.OrthographicCamera(-window.innerWidth / 50, 
-                                                    window.innerWidth / 50, 
-                                                    -window.innerHeight / 50,
-                                                    window.innerHeight / 50); //new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 100 );
-        camera.position.set( 0, 0, 20 );
-        var lookVector = new THREE.Vector3( 0, 0, 0 );
-        camera.lookAt( lookVector );
+    const scene = new THREE.Scene();
+    //var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const camera = new THREE.OrthographicCamera(-window.innerWidth / 50, 
+                                                window.innerWidth / 50, 
+                                                -window.innerHeight / 50,
+                                                window.innerHeight / 50); // */ new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 100 );
+    camera.position.set( 0, 0, 20 );
+    var lookVector = new THREE.Vector3( 0, 0, 0 );
+    camera.lookAt( lookVector );
 
-        const controls = new THREE.OrthographicTrackballControls( camera );
-        document.addEventListener( 'mouseup', (e) => {
-            const incr = 5;
-            const current = camera.position;
-            camera.position.set(current.x + incr, current.y, current.z);
+    const controls = new THREE.OrthographicTrackballControls( camera );
+    /*document.addEventListener('mouseup', (e) => {
+        const incr = 5;
+        const current = camera.position;
+        camera.position.set(current.x + incr, current.y, current.z);
 
-            lookVector.x += incr;
-            camera.lookAt(lookVector);
-        }, false);
+        lookVector.x += incr;
+        camera.lookAt(lookVector);
+    }, false);*/
 
-        /*controls.rotateSpeed = 2.0;
-        controls.noRotate = true;
+    controls.rotateSpeed = 2.0;
+    //controls.noRotate = true;
 
-        controls.zoomSpeed = 1.5;
-        controls.panSpeed = 3;
+    //controls.zoomSpeed = 1.5;
+    controls.panSpeed = 0.1;
 
-        controls.noZoom = false;
-        controls.noPan = false;
-        
-        controls.staticMoving = false;
-        controls.dynamicDampingFactor = 0.3;*/
+    controls.noZoom = false;
+    controls.noPan = false;
+    controls.staticMoving = true;
 
-        scene.add( buildAxes(window.innerWidth) );
+    //controls.dynamicDampingFactor = 0.3;
+    var size = 30;
+    var divisions = 30;
+    var gridHelper = new THREE.GridHelper( size, divisions );
+    gridHelper.rotation.x = Math.PI / 2;
+    scene.add( gridHelper );
 
-        function samplePoint() {
-            var geom = new THREE.Geometry(),
-                mat = new THREE.PointsMaterial({ color: 0x000000, size: 1 });
-            geom.vertices.push( new THREE.Vector3(0, 0, 0));
+    // scene.add( buildAxes(window.innerWidth) );
 
-            var pt = new THREE.Points(geom, mat);
-            return pt;
-        }
+    function samplePoint() {
+        var geom = new THREE.Geometry(),
+            mat = new THREE.PointsMaterial({ color: 0x000000, size: 1 });
+        geom.vertices.push( new THREE.Vector3(0, 0, 0));
 
-        scene.add(pt);
-
-        function animate() {
-            requestAnimationFrame( animate );
-
-            if (canUpdate) {
-                controls.update();
-            }
-
-            renderer.render( scene, camera );
-        }
-
-        animate();
+        var pt = new THREE.Points(geom, mat);
+        return pt;
     }
 
+    //scene.add(pt);
+
+    function animate() {
+        requestAnimationFrame( animate );
+
+        if (canUpdate) {
+            controls.update();
+        }
+
+        renderer.render( scene, camera );
+    }
+
+    animate();
 </script>
-
-
-</head>
-
-
-<body onload="onLoad();">
 
 </body>
 
