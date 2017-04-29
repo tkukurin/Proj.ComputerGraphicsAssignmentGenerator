@@ -5,7 +5,8 @@
  * @author Max Smolens / https://github.com/msmolens
  * 
  * Without touch and rotate functions
- * 
+ * limited panning.
+ * NOTE: _this.object is usually the camera.
  * 
  */
 
@@ -208,10 +209,6 @@ THREE.OrthographicTrackballControls = function (object, limits, domElement) {
 
 	};
 
-    this.reachedLimits = function(pos) {
-        return _this.limit && abs(_this.object.position.x) >= _this.limit.x
-    }
-
 	this.panCamera = ( function() {
 
 		var mouseChange = new THREE.Vector2(),
@@ -237,8 +234,10 @@ THREE.OrthographicTrackballControls = function (object, limits, domElement) {
 				pan.copy( _eye ).cross( _this.object.up ).setLength( mouseChange.x );
 				pan.add( objectUp.copy( _this.object.up ).setLength( mouseChange.y ) );
                 
-                const objX = _this.object.position.x;
-                const objY = _this.object.position.y;
+                const obj = _this.object;
+                const largerAbs = (a, b) => Math.max(Math.abs(a), Math.abs(b)) === Math.abs(a) ? a : b;
+                const objX = largerAbs(obj.position.x + obj.left, obj.position.x + obj.right);
+                const objY = largerAbs(obj.position.y + obj.bottom, obj.position.y + obj.top);
 
                 const outOfBoundsX = _this.limits && Math.abs(objX) >= _this.limits.x;
                 const goingInOppositeDirectionX = Math.sign(pan.x) !== Math.sign(objX);
