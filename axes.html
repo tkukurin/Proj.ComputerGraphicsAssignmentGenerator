@@ -205,6 +205,7 @@
     // canvas.getBoundingClientRect()
     const worldCoordinateHelper = new WorldCoordinateHelper(camera, renderer.context.canvas.getBoundingClientRect(), new THREE.Raycaster());
     var pt;
+    var outline;
 
     document.addEventListener('mousemove', (e) => {
         if(axis)
@@ -220,8 +221,12 @@
         raycaster.setFromCamera(mouse, camera);
 
         // TODO 
-        const intersect = worldCoordinateHelper.getIntersections(e.clientX, e.clientY, scene.children); //raycaster.intersectObject(gridHelper);
-        const xp = intersect.filter(o => parseInt(o.point.x) === o.point.x)[0].point.x;
+        const distFromWhole = (pt) => Math.abs(Math.abs(pt.x) - Math.abs(Math.round(pt.x)));
+        var xp = worldCoordinateHelper.getIntersections(e.clientX, e.clientY, scene.children)
+                .filter(val => Math.round(val.point.x) !== val.point.x)
+                .reduceRight((prevVal, currVal) =>  distFromWhole(prevVal.point) < distFromWhole(currVal.point) ? prevVal : currVal);
+
+        xp = Math.round(xp.point.x);
         axis = buildAxis( new THREE.Vector3( xp, -200, 0 ), new THREE.Vector3( xp, 200, 0 ), 0xFF0000, false );
 
         scene.add(axis);
@@ -232,15 +237,46 @@
         const button = e.which || e.button;
         const isLeft = button == 1;
         
-        // try raycast on lines
-        // objects.filter(obj => obj.selectable)
-        if (isLeft) {
-            const intersections = worldCoordinateHelper.getIntersections(e.clientX, e.clientY, [pt]);
-            //scene.add(getWireframe(intersections[0].geometry, { color: 0xff0000 }));
+        const objects = worldCoordinateHelper.getIntersections(e.clientX, e.clientY, scene.children);
+        var o = [];
+        if (objects.length>0) {
+            for (var i in objects) {
+                if (objects[i].object.userData.verticeIndex) {
+                    o.push(objects[i].object.userData.verticeIndex);
+                }
+            }
+            o = o.length>0 ? o[0] : -1;
+        } else {
+            o = -1;
+        } 
+
+        activeCell = (o>=0) ? true : false;
+
+        for(var i in scene.children) {
+            if (scene.children[i].userData.verticeIndex === o) {
+                scene.children[i].material.color.setHex(0x78F9F6);
+                //scene.children[i].scale.set(2,2,2);
+            }
+        }
+
+        /*if (isLeft) {
+            if (intersections.length > 0) {
+                outline = getWireframe(intersections[0].object.geometry, { color: 0xff0000 });
+                scene.add(outline);    
+            } else if (outline) {
+                scene.remove(outline);
+            }
+            
             console.log(intersections);
             //intersections
-        }
+        }*/
     });
+
+    var userDataIter = 0;
+    function add(object) {
+        object.userData.verticeIndex = userDataIter++;
+        scene.add(object);
+    }
 
     //controls.panSpeed = 0.1;
     controls.noRotate = true;
@@ -253,22 +289,22 @@
     var divisions = viewportMaxAxis * 2;
     gridHelper = new NumeratedGridHelper(size, divisions); // new THREE.GridHelper( size, divisions );
     gridHelper.rotation.x = Math.PI / 2;
-    scene.add( gridHelper );
+    add( gridHelper );
 
-    scene.add( getTriangleWireframe( 
+    add( getTriangleWireframe( 
         new THREE.Vector2(1, 1),
         new THREE.Vector2(1, 5),
         new THREE.Vector2(5, 1)
     ));
 
-    scene.add( getSquareWireframe( 
+    add( getSquareWireframe( 
         new THREE.Vector2(0, 0),
         new THREE.Vector2(-4, -4),
         new THREE.Vector2(-5, 5),
         new THREE.Vector2(-2, 0)
     ));
 
-    scene.add( getLine(
+    add( getLine(
         new THREE.Vector2(0, 0),
         new THREE.Vector2(0, 10),
         { color: 0xffff00, linewidth: 2 }
@@ -287,15 +323,15 @@
         return edges;
     }
 
-    scene.add(l);
-    scene.add(getWireframe(l.geometry, { color: 0xff0000, linewidth: 2 }));
+    add(l);
+    add(getWireframe(l.geometry, { color: 0xff0000, linewidth: 2 }));
 
     pt = getSquarePoint(
         new THREE.Vector2(2, -2),
         { color: 0x00ff00 }
     );
 
-    scene.add(pt);
+    add(pt);
 
     // scene.add( buildAxes(window.innerWidth) );
 
