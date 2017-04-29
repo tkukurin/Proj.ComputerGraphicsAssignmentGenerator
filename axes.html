@@ -8,6 +8,8 @@
 <script src="https://rawgithub.com/mrdoob/three.js/master/examples/js/controls/TrackballControls.js"></script>
 <script src="https://rawgithub.com/mrdoob/three.js/master/examples/js/controls/OrthographicTrackballControls.js"></script>
 
+<script src="./helpers.js"></script>
+
 </head>
 
 <body>
@@ -45,6 +47,46 @@
         return axes;
     }
 
+    function NumeratedGridHelper( size, divisions, color1, color2 ) {
+
+        size = size || 10;
+        divisions = divisions || 10;
+        color1 = new THREE.Color( color1 !== undefined ? color1 : 0x444444 );
+        color2 = new THREE.Color( color2 !== undefined ? color2 : 0x888888 );
+
+        var center = divisions / 2;
+        var step = size / divisions;
+        var halfSize = size / 2;
+
+        var vertices = [], colors = [];
+
+        for ( var i = 0, j = 0, k = - halfSize; i <= divisions; i ++, k += step ) {
+
+            vertices.push( - halfSize, 0, k, halfSize, 0, k );
+            vertices.push( k, 0, - halfSize, k, 0, halfSize );
+
+            var color = i === center ? color1 : color2;
+
+            color.toArray( colors, j ); j += 3;
+            color.toArray( colors, j ); j += 3;
+            color.toArray( colors, j ); j += 3;
+            color.toArray( colors, j ); j += 3;
+            
+        }
+
+        var geometry = new THREE.BufferGeometry();
+        geometry.addAttribute( 'position', new THREE.Float32BufferAttribute( vertices, 3 ) );
+        geometry.addAttribute( 'color', new THREE.Float32BufferAttribute( colors, 3 ) );
+
+        var material = new THREE.LineBasicMaterial( { vertexColors: THREE.VertexColors } );
+
+        THREE.LineSegments.call( this, geometry, material );
+    }
+
+    NumeratedGridHelper.prototype = Object.create( THREE.LineSegments.prototype );
+    NumeratedGridHelper.prototype.constructor = NumeratedGridHelper;
+
+
     var canUpdate = true;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -53,39 +95,61 @@
     renderer.setClearColor( 0xeeeeee, 1.0 );
 
     const scene = new THREE.Scene();
-    //var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const camera = new THREE.OrthographicCamera(-window.innerWidth / 50, 
+    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    /*const camera = new THREE.OrthographicCamera(-window.innerWidth / 50, 
                                                 window.innerWidth / 50, 
                                                 -window.innerHeight / 50,
-                                                window.innerHeight / 50); // */ new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 100 );
+                                                window.innerHeight / 50); // */ //new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 100 );
     camera.position.set( 0, 0, 20 );
     var lookVector = new THREE.Vector3( 0, 0, 0 );
     camera.lookAt( lookVector );
 
     const controls = new THREE.OrthographicTrackballControls( camera );
-    /*document.addEventListener('mouseup', (e) => {
-        const incr = 5;
-        const current = camera.position;
-        camera.position.set(current.x + incr, current.y, current.z);
+    var axis;
+    var gridHelper;
 
-        lookVector.x += incr;
-        camera.lookAt(lookVector);
-    }, false);*/
+    document.addEventListener('mouseup', (e) => {
+        console.log(e);
+        // sad treba transformation matrix ili nešto na position
+        // da se dobiju realne koordinate
 
-    controls.rotateSpeed = 2.0;
-    //controls.noRotate = true;
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2(0, 0);
+        const window = renderer.context.canvas;
 
-    //controls.zoomSpeed = 1.5;
+        mouse.x = ( event.clientX / window.width ) * 2 - 1;
+        mouse.y = - ( event.clientY / window.height ) * 2 + 1;
+        raycaster.setFromCamera(mouse.clone(), camera);
+
+        console.log(raycaster.ray);
+        const intersect = raycaster.intersectObject(gridHelper);
+        //axis = buildAxis( new THREE.Vector3( raycaster.ray.origin.x, -200, 0 ), new THREE.Vector3( raycaster.ray.origin.x, 200, 0 ), 0xFF0000, false );
+
+        // pokuša napravit intersection sve djece predanog objekta. 
+        // vj bi trebalo provjerit je li integer 
+        const xp = intersect[0].point.x;
+        axis = buildAxis( new THREE.Vector3( xp, -200, 0 ), new THREE.Vector3( xp, 200, 0 ), 0xFF0000, false );
+
+        scene.add(axis);
+        renderer.render(scene, camera);
+    }, false);
+
+    document.addEventListener('mousemove', (e) => {
+        //if(axis)
+            //scene.remove(axis);
+        
+    });
+
     controls.panSpeed = 0.1;
-
+    controls.noRotate = true;
     controls.noZoom = false;
+    controls.zoomSpeed = 1.2;
     controls.noPan = false;
     controls.staticMoving = true;
 
-    //controls.dynamicDampingFactor = 0.3;
     var size = 30;
     var divisions = 30;
-    var gridHelper = new THREE.GridHelper( size, divisions );
+    gridHelper = new NumeratedGridHelper(size, divisions); // new THREE.GridHelper( size, divisions );
     gridHelper.rotation.x = Math.PI / 2;
     scene.add( gridHelper );
 
