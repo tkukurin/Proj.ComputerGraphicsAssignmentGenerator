@@ -236,16 +236,22 @@ THREE.OrthographicTrackballControls = function (object, limits, domElement) {
 
 				pan.copy( _eye ).cross( _this.object.up ).setLength( mouseChange.x );
 				pan.add( objectUp.copy( _this.object.up ).setLength( mouseChange.y ) );
+                
+                const objX = _this.object.position.x;
+                const objY = _this.object.position.y;
 
-                const outOfBoundsX = _this.limits && abs(_this.object.position.x) >= _this.limits.x;
-                const outOfBoundsY = _this.limits && abs(_this.object.position.y) >= _this.limits.y;
+                const outOfBoundsX = _this.limits && Math.abs(objX) >= _this.limits.x;
+                const goingInOppositeDirectionX = Math.sign(pan.x) !== Math.sign(objX);
 
-                if ( !outOfBoundsX ) {
+                const outOfBoundsY = _this.limits && Math.abs(objY) >= _this.limits.y;
+                const goingInOppositeDirectionY = Math.sign(pan.y) !== Math.sign(objY);
+
+                if ( !outOfBoundsX || goingInOppositeDirectionX ) {
                     _this.object.position.x += pan.x;
                     _this.target.x += pan.x;
                 }
 
-                if ( !outOfBoundsY ) {
+                if ( !outOfBoundsY || goingInOppositeDirectionY ) {
                     _this.object.position.y += pan.y;
                     _this.target.y += pan.y;
                 }
