@@ -6,8 +6,9 @@
 
 <script src="https://rawgithub.com/mrdoob/three.js/master/build/three.js"></script> <!-- Get the latest version of the Three.js library. -->
 <script src="https://rawgithub.com/mrdoob/three.js/master/examples/js/controls/TrackballControls.js"></script>
-<script src="https://rawgithub.com/mrdoob/three.js/master/examples/js/controls/OrthographicTrackballControls.js"></script>
+<!-- <script src="https://rawgithub.com/mrdoob/three.js/master/examples/js/controls/OrthographicTrackballControls.js"></script> -->
 
+<script src="./project1/modifiedOrthoControls.js"></script>
 <script src="./helpers.js"></script>
 
 </head>
@@ -95,11 +96,16 @@
     renderer.setClearColor( 0xeeeeee, 1.0 );
 
     const scene = new THREE.Scene();
-    var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    //var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     /*const camera = new THREE.OrthographicCamera(-window.innerWidth / 50, 
                                                 window.innerWidth / 50, 
                                                 -window.innerHeight / 50,
                                                 window.innerHeight / 50); // */ //new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 100 );
+    const viewportMaxAxis = 30;
+    const camera = new THREE.OrthographicCamera(-viewportMaxAxis, 
+                                                viewportMaxAxis, 
+                                                -(window.innerHeight / window.innerWidth) * viewportMaxAxis,
+                                                (window.innerHeight / window.innerWidth)* viewportMaxAxis);
     camera.position.set( 0, 0, 20 );
     var lookVector = new THREE.Vector3( 0, 0, 0 );
     camera.lookAt( lookVector );
@@ -108,10 +114,11 @@
     var axis;
     var gridHelper;
 
-    document.addEventListener('mouseup', (e) => {
-        console.log(e);
-        // sad treba transformation matrix ili nešto na position
-        // da se dobiju realne koordinate
+    
+
+    document.addEventListener('mousemove', (e) => {
+        if(axis)
+            scene.remove(axis);
 
         const raycaster = new THREE.Raycaster();
         const mouse = new THREE.Vector2(0, 0);
@@ -119,36 +126,27 @@
 
         mouse.x = ( event.clientX / window.width ) * 2 - 1;
         mouse.y = - ( event.clientY / window.height ) * 2 + 1;
-        raycaster.setFromCamera(mouse.clone(), camera);
+        
+        raycaster.setFromCamera(mouse, camera);
 
-        console.log(raycaster.ray);
+        // TODO 
         const intersect = raycaster.intersectObject(gridHelper);
-        //axis = buildAxis( new THREE.Vector3( raycaster.ray.origin.x, -200, 0 ), new THREE.Vector3( raycaster.ray.origin.x, 200, 0 ), 0xFF0000, false );
-
-        // pokuša napravit intersection sve djece predanog objekta. 
-        // vj bi trebalo provjerit je li integer 
-        const xp = intersect[0].point.x;
+        const xp = intersect.filter(o => parseInt(o.point.x) === o.point.x)[0].point.x;
         axis = buildAxis( new THREE.Vector3( xp, -200, 0 ), new THREE.Vector3( xp, 200, 0 ), 0xFF0000, false );
 
         scene.add(axis);
         renderer.render(scene, camera);
-    }, false);
-
-    document.addEventListener('mousemove', (e) => {
-        //if(axis)
-            //scene.remove(axis);
-        
     });
 
-    controls.panSpeed = 0.1;
+    //controls.panSpeed = 0.1;
     controls.noRotate = true;
     controls.noZoom = false;
     controls.zoomSpeed = 1.2;
     controls.noPan = false;
     controls.staticMoving = true;
 
-    var size = 30;
-    var divisions = 30;
+    var size = viewportMaxAxis * 2;
+    var divisions = viewportMaxAxis * 2;
     gridHelper = new NumeratedGridHelper(size, divisions); // new THREE.GridHelper( size, divisions );
     gridHelper.rotation.x = Math.PI / 2;
     scene.add( gridHelper );
