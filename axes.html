@@ -203,7 +203,7 @@
     var gridHelper;
     //const worldCoordinateHelper = new WorldCoordinateHelper(camera, {width: this.window.innerWidth, height: this.window.innerHeight}, new THREE.Raycaster());
     // canvas.getBoundingClientRect()
-    const worldCoordinateHelper = new WorldCoordinateHelper(camera, renderer.context.canvas.getBoundingClientRect(), new THREE.Raycaster());
+    var worldCoordinateHelper = new WorldCoordinateHelper(camera, renderer.context.canvas.getBoundingClientRect(), new THREE.Raycaster());
     var pt;
     var outline;
 
@@ -315,6 +315,22 @@
         new THREE.Vector2(0, -10),
         { color: 0xffff00, linewidth: 2 }
     );
+
+    window.addEventListener( 'resize', onWindowResize, false );
+
+    function onWindowResize() {
+        const aspect = 1.0*window.innerHeight / window.innerWidth;
+
+        renderer.context.canvas.height = aspect * renderer.context.canvas.width;
+
+        camera.top = viewportMaxAxis * aspect;
+        camera.bottom = -camera.top;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize( window.innerWidth , window.innerHeight );
+
+        worldCoordinateHelper = new WorldCoordinateHelper(camera, renderer.context.canvas.getBoundingClientRect(), new THREE.Raycaster());
+    }
 
     function outline(obj) {
         var edges = new THREE.EdgesGeometry(obj, 0x0000ff);
