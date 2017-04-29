@@ -110,11 +110,9 @@
     var lookVector = new THREE.Vector3( 0, 0, 0 );
     camera.lookAt( lookVector );
 
-    const controls = new THREE.OrthographicTrackballControls( camera );
+    const controls = new THREE.OrthographicTrackballControls(camera, {x: viewportMaxAxis, y: viewportMaxAxis});
     var axis;
     var gridHelper;
-
-    
 
     document.addEventListener('mousemove', (e) => {
         if(axis)
