@@ -7,7 +7,7 @@
  * Without touch and rotate functions
  * limited panning.
  * NOTE: _this.object is usually the camera.
- * 
+ * TODO: fix zoom.
  */
 
 THREE.OrthographicTrackballControls = function (object, limits, domElement) {
@@ -187,25 +187,39 @@ THREE.OrthographicTrackballControls = function (object, limits, domElement) {
 
 	this.zoomCamera = function () {
 
-        var factor = 1.0 + ( _zoomEnd.y - _zoomStart.y ) * _this.zoomSpeed;
+        if ( _state === STATE.TOUCH_ZOOM_PAN ) {
 
-        if ( Math.abs( factor - 1.0 ) > EPS && factor > 0.0 ) {
+			var factor = _touchZoomDistanceEnd / _touchZoomDistanceStart;
+			_touchZoomDistanceStart = _touchZoomDistanceEnd;
 
-            _this.object.zoom /= factor;
+			_this.object.zoom *= factor;
 
-            if ( _this.staticMoving ) {
+			_changed = true;
 
-                _zoomStart.copy( _zoomEnd );
+		} else {
 
-            } else {
+			var factor = 1.0 + ( _zoomEnd.y - _zoomStart.y ) * _this.zoomSpeed;
 
-                _zoomStart.y += ( _zoomEnd.y - _zoomStart.y ) * this.dynamicDampingFactor;
+			if ( Math.abs( factor - 1.0 ) > EPS && factor > 0.0 ) {
 
-            }
+				_this.object.zoom /= factor;
 
-            _changed = true;
+				if ( _this.staticMoving ) {
 
-        }
+					_zoomStart.copy( _zoomEnd );
+
+				} else {
+
+					_zoomStart.y += ( _zoomEnd.y - _zoomStart.y ) * this.dynamicDampingFactor;
+
+				}
+
+				_changed = true;
+
+			}
+
+		}
+
 
 	};
 

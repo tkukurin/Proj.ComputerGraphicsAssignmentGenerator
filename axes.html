@@ -16,6 +16,65 @@
 <body>
     
 <script type="text/javascript">
+
+    function getWireframe(geometry, materialProperties) {
+        geometry.computeFaceNormals();
+        
+        const geom = new THREE.EdgesGeometry(geometry);
+        const mat = new THREE.LineBasicMaterial(materialProperties);
+
+        return new THREE.LineSegments(geom, mat);
+    }
+
+    function getTriangleWireframe(A, B, C) {
+        const geometry = new THREE.Geometry();
+        const v1 = new THREE.Vector3(A.x, -A.y, 0);
+        const v2 = new THREE.Vector3(B.x, -B.y, 0);
+        const v3 = new THREE.Vector3(C.x, -C.y, 0);
+
+        geometry.vertices.push(v1);
+        geometry.vertices.push(v2);
+        geometry.vertices.push(v3);
+        geometry.faces.push( new THREE.Face3( 0, 1, 2 ) );
+
+        return getWireframe(geometry, { color: 0xff0000, linewidth: 2 });
+    }
+
+    function getSquareWireframe(A, B, C, D) {
+        const geometry = new THREE.Geometry();
+        const v1 = new THREE.Vector3(A.x, -A.y,0);
+        const v2 = new THREE.Vector3(B.x, -B.y,0);
+        const v3 = new THREE.Vector3(C.x, -C.y,0);
+        const v4 = new THREE.Vector3(D.x, -D.y,0);
+
+        geometry.vertices.push(v1);
+        geometry.vertices.push(v2);
+        geometry.vertices.push(v3);
+        geometry.vertices.push(v4);
+
+        geometry.faces.push(new THREE.Face3(0, 1, 2));
+        geometry.faces.push(new THREE.Face3(0, 3, 2));
+
+
+        return getWireframe(geometry, { color: 0xff0000, linewidth: 2 });
+    }
+
+    function getTriangle(A, B, C) {
+        var geom = new THREE.Geometry();
+        var v1 = new THREE.Vector3(A.x, A.y,0);
+        var v2 = new THREE.Vector3(B.x, B.y,0);
+        var v3 = new THREE.Vector3(C.x, C.y,0);
+
+        geom.vertices.push(v1);
+        geom.vertices.push(v2);
+        geom.vertices.push(v3);
+
+        geom.faces.push( new THREE.Face3( 0, 1, 2 ) );
+        geom.computeFaceNormals();
+
+        return new THREE.Mesh( geom, new THREE.MeshNormalMaterial() );
+    }
+
     function buildAxis( src, dst, colorHex, dashed ) {
         var geom = new THREE.Geometry(),
             mat;
@@ -139,7 +198,7 @@
     //controls.panSpeed = 0.1;
     controls.noRotate = true;
     controls.noZoom = false;
-    controls.zoomSpeed = 1.2;
+    controls.zoomSpeed = 3;
     controls.noPan = false;
     controls.staticMoving = true;
 
@@ -148,6 +207,19 @@
     gridHelper = new NumeratedGridHelper(size, divisions); // new THREE.GridHelper( size, divisions );
     gridHelper.rotation.x = Math.PI / 2;
     scene.add( gridHelper );
+
+    scene.add( getTriangleWireframe( 
+        new THREE.Vector2(1, 1),
+        new THREE.Vector2(1, 5),
+        new THREE.Vector2(5, 1)
+    ));
+
+    scene.add( getSquareWireframe( 
+        new THREE.Vector2(0, 0),
+        new THREE.Vector2(-4, -4),
+        new THREE.Vector2(-5, 5),
+        new THREE.Vector2(-2, 0)
+    ));
 
     // scene.add( buildAxes(window.innerWidth) );
 
