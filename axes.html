@@ -90,9 +90,9 @@
 
     function getTriangle(A, B, C) {
         var geom = new THREE.Geometry();
-        var v1 = new THREE.Vector3(A.x, A.y,0);
-        var v2 = new THREE.Vector3(B.x, B.y,0);
-        var v3 = new THREE.Vector3(C.x, C.y,0);
+        var v1 = A;//new THREE.Vector3(A.x, A.y,0);
+        var v2 = B;//new THREE.Vector3(B.x, B.y,0);
+        var v3 = C;//new THREE.Vector3(C.x, C.y,0);
 
         geom.vertices.push(v1);
         geom.vertices.push(v2);
@@ -190,15 +190,21 @@
                                                 -window.innerHeight / 50,
                                                 window.innerHeight / 50); // */ //new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 100 );
     const viewportMaxAxis = 30;
-    const camera = new THREE.OrthographicCamera(-viewportMaxAxis, 
+    const pixelsPerUnit = 40;
+    const aspectRatio = window.innerHeight / window.innerWidth;
+    const maxHorizontal = window.innerWidth / (2 * pixelsPerUnit);
+    const maxVertical = aspectRatio * maxHorizontal;
+    const camera = new THREE.OrthographicCamera(-maxHorizontal, maxHorizontal, maxVertical, -maxVertical);
+
+    /*const camera = new THREE.OrthographicCamera(-viewportMaxAxis, 
                                                 viewportMaxAxis, 
                                                 (window.innerHeight / window.innerWidth) * viewportMaxAxis,
-                                                -(window.innerHeight / window.innerWidth)* viewportMaxAxis);
+                                                -(window.innerHeight / window.innerWidth)* viewportMaxAxis);*/
     camera.position.set( 0, 0, 20 );
     var lookVector = new THREE.Vector3( 0, 0, 0 );
     camera.lookAt( lookVector );
 
-    const controls = new THREE.OrthographicTrackballControls(camera, {x: viewportMaxAxis, y: viewportMaxAxis});
+    const controls = new THREE.OrthographicTrackballControls(camera, {x: viewportMaxAxis, y: viewportMaxAxis });
     var axis;
     var gridHelper;
     //const worldCoordinateHelper = new WorldCoordinateHelper(camera, {width: this.window.innerWidth, height: this.window.innerHeight}, new THREE.Raycaster());
@@ -319,12 +325,18 @@
     window.addEventListener( 'resize', onWindowResize, false );
 
     function onWindowResize() {
-        const aspect = 1.0*window.innerHeight / window.innerWidth;
+        const aspect = window.innerHeight / window.innerWidth;
+
+        const aspectRatio = window.innerHeight / window.innerWidth;
+        const maxHorizontal = window.innerWidth / (2 * pixelsPerUnit);
+        const maxVertical = aspectRatio * maxHorizontal;
 
         renderer.context.canvas.height = aspect * renderer.context.canvas.width;
 
-        camera.top = viewportMaxAxis * aspect;
-        camera.bottom = -camera.top;
+        camera.left = -maxHorizontal;
+        camera.right = maxHorizontal;
+        camera.top = maxVertical;
+        camera.bottom = -maxVertical;
         camera.updateProjectionMatrix();
 
         renderer.setSize( window.innerWidth , window.innerHeight );
