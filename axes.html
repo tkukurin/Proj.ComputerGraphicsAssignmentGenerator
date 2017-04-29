@@ -39,9 +39,7 @@
         return new THREE.LineSegments(geometry, material);
     }
 
-    function getWireframe(geometry, materialProperties) {
-        geometry.computeFaceNormals();
-        
+    function getWireframe(geometry, materialProperties) {        
         const geom = new THREE.EdgesGeometry(geometry);
         const mat = new THREE.LineBasicMaterial(materialProperties);
 
@@ -63,7 +61,10 @@
     }
 
     function getSquarePoint(loc, material) {
-        var geometry = new THREE.BoxGeometry( 5, 5, 2 );
+        var geometry = new THREE.CircleGeometry( 0.25, 10 );
+        geometry.translate(loc.x, loc.y, 0);
+        geometry.computeFaceNormals();
+
         var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
         var cube = new THREE.Mesh( geometry, material );
         return cube;
@@ -200,6 +201,10 @@
     const controls = new THREE.OrthographicTrackballControls(camera, {x: viewportMaxAxis, y: viewportMaxAxis});
     var axis;
     var gridHelper;
+    //const worldCoordinateHelper = new WorldCoordinateHelper(camera, {width: this.window.innerWidth, height: this.window.innerHeight}, new THREE.Raycaster());
+    // canvas.getBoundingClientRect()
+    const worldCoordinateHelper = new WorldCoordinateHelper(camera, renderer.context.canvas.getBoundingClientRect(), new THREE.Raycaster());
+    var pt;
 
     document.addEventListener('mousemove', (e) => {
         if(axis)
@@ -215,7 +220,7 @@
         raycaster.setFromCamera(mouse, camera);
 
         // TODO 
-        const intersect = raycaster.intersectObject(gridHelper);
+        const intersect = worldCoordinateHelper.getIntersections(e.clientX, e.clientY, scene.children); //raycaster.intersectObject(gridHelper);
         const xp = intersect.filter(o => parseInt(o.point.x) === o.point.x)[0].point.x;
         axis = buildAxis( new THREE.Vector3( xp, -200, 0 ), new THREE.Vector3( xp, 200, 0 ), 0xFF0000, false );
 
@@ -224,10 +229,17 @@
     });
 
     document.addEventListener('mousedown', e => {
-        const button = evt.which || evt.button;
+        const button = e.which || e.button;
         const isLeft = button == 1;
+        
         // try raycast on lines
-        // 
+        // objects.filter(obj => obj.selectable)
+        if (isLeft) {
+            const intersections = worldCoordinateHelper.getIntersections(e.clientX, e.clientY, [pt]);
+            //scene.add(getWireframe(intersections[0].geometry, { color: 0xff0000 }));
+            console.log(intersections);
+            //intersections
+        }
     });
 
     //controls.panSpeed = 0.1;
@@ -262,12 +274,26 @@
         { color: 0xffff00, linewidth: 2 }
     ));
 
-    var pt = getSquarePoint(
+    const l = getLine(
         new THREE.Vector2(0, 0),
+        new THREE.Vector2(0, -10),
+        { color: 0xffff00, linewidth: 2 }
+    );
+
+    function outline(obj) {
+        var edges = new THREE.EdgesGeometry(obj, 0x0000ff);
+        edges.material.linewidth = 2;
+
+        return edges;
+    }
+
+    scene.add(l);
+    scene.add(getWireframe(l.geometry, { color: 0xff0000, linewidth: 2 }));
+
+    pt = getSquarePoint(
+        new THREE.Vector2(2, -2),
         { color: 0x00ff00 }
     );
-    //pt.geometry.applyMatrix( new THREE.Matrix4().makeTranslation(-1,-1, 0) );
-    pt.add(getWireframe(pt.geometry, { color: 0xff0000, linewidth: 10 }));
 
     scene.add(pt);
 
