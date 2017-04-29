@@ -17,6 +17,28 @@
     
 <script type="text/javascript">
 
+    function getPoint(A, materialProperties) {
+        const geometry = new THREE.Geometry();
+        const material = new THREE.PointsMaterial(materialProperties);
+
+        const v1 = new THREE.Vector3(A.x, A.y, 0);
+        geometry.vertices.push(v1);
+
+        return new THREE.Points(geometry, material);
+    }
+
+    function getLine(A, B, materialProperties) {
+        const geometry = new THREE.Geometry();
+        const material = new THREE.LineBasicMaterial(materialProperties);
+
+        const v1 = new THREE.Vector3(A.x, A.y, 0);
+        const v2 = new THREE.Vector3(B.x, B.y, 0);
+        geometry.vertices.push(v1);
+        geometry.vertices.push(v2);
+
+        return new THREE.LineSegments(geometry, material);
+    }
+
     function getWireframe(geometry, materialProperties) {
         geometry.computeFaceNormals();
         
@@ -28,9 +50,9 @@
 
     function getTriangleWireframe(A, B, C) {
         const geometry = new THREE.Geometry();
-        const v1 = new THREE.Vector3(A.x, -A.y, 0);
-        const v2 = new THREE.Vector3(B.x, -B.y, 0);
-        const v3 = new THREE.Vector3(C.x, -C.y, 0);
+        const v1 = new THREE.Vector3(A.x, A.y, 0);
+        const v2 = new THREE.Vector3(B.x, B.y, 0);
+        const v3 = new THREE.Vector3(C.x, C.y, 0);
 
         geometry.vertices.push(v1);
         geometry.vertices.push(v2);
@@ -42,10 +64,10 @@
 
     function getSquareWireframe(A, B, C, D) {
         const geometry = new THREE.Geometry();
-        const v1 = new THREE.Vector3(A.x, -A.y,0);
-        const v2 = new THREE.Vector3(B.x, -B.y,0);
-        const v3 = new THREE.Vector3(C.x, -C.y,0);
-        const v4 = new THREE.Vector3(D.x, -D.y,0);
+        const v1 = new THREE.Vector3(A.x, A.y,0);
+        const v2 = new THREE.Vector3(B.x, B.y,0);
+        const v3 = new THREE.Vector3(C.x, C.y,0);
+        const v4 = new THREE.Vector3(D.x, D.y,0);
 
         geometry.vertices.push(v1);
         geometry.vertices.push(v2);
@@ -163,8 +185,8 @@
     const viewportMaxAxis = 30;
     const camera = new THREE.OrthographicCamera(-viewportMaxAxis, 
                                                 viewportMaxAxis, 
-                                                -(window.innerHeight / window.innerWidth) * viewportMaxAxis,
-                                                (window.innerHeight / window.innerWidth)* viewportMaxAxis);
+                                                (window.innerHeight / window.innerWidth) * viewportMaxAxis,
+                                                -(window.innerHeight / window.innerWidth)* viewportMaxAxis);
     camera.position.set( 0, 0, 20 );
     var lookVector = new THREE.Vector3( 0, 0, 0 );
     camera.lookAt( lookVector );
@@ -220,6 +242,19 @@
         new THREE.Vector2(-5, 5),
         new THREE.Vector2(-2, 0)
     ));
+
+    scene.add( getLine(
+        new THREE.Vector2(0, 0),
+        new THREE.Vector2(0, 10),
+        { color: 0xffff00, linewidth: 2 }
+    ));
+
+    const pt = getPoint(
+        new THREE.Vector2(0, 0),
+        { color: 0x00ff00, size: 1 }
+    );
+    pt.geometry.applyMatrix( new THREE.Matrix4().makeTranslation(-1,-1, 0) );
+    scene.add(pt);
 
     // scene.add( buildAxes(window.innerWidth) );
 
