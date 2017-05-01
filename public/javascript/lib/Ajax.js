@@ -4,7 +4,7 @@ function constructErrorHtml(error) {
     const errorHead = document.createElement("h2");
     const errorBody = document.createElement("p");
 
-    errorHead.innerHTML = "Došlo je do greške";
+    errorHead.innerHTML = "Došlo je do greške (" + error.status + ")";
     errorBody.innerHTML = error.message;
     errorMessage.appendChild(errorHead);
     errorMessage.appendChild(errorBody);
@@ -12,36 +12,30 @@ function constructErrorHtml(error) {
     return errorMessage;
 }
 
-//const errorHtml = constructErrorHtml(error);
-//document.body.appendChild(errorHtml);
+function jsonOrThrow(response) {
+    if (response.ok) 
+        return response.json();
 
-function getJson(endpoint) {
-    return fetch(endpoint)
-        .then(response => response.json())
-        .catch(constructErrorHtml);
+    throw { status: response.status, 
+            message: response.statusText };
 }
 
-/*
-possibly also:
+function getJson(endpoint) {
+    return fetch(endpoint).then(jsonOrThrow);
+}
 
-fetch(endpoint,
-{
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
-    },
-    method: "POST",
-    body: JSON.stringify(json)
-})
-*/
+function jsonHeaders() {
+    return { 'Accept': 'application/json',
+             'Content-Type': 'application/json' };
+}
 
 function postJson(endpoint, json) {
-    var data = new FormData();
-    data.append("json", JSON.stringify(json));
+    //var data = new FormData();
+    //data.append("json", JSON.stringify(json));
 
     return fetch(endpoint, {
+            headers: jsonHeaders(),
             method: "POST",
-            body: data
-        }).then(response => response.json())
-          .catch(constructErrorHtml);
+            body: JSON.stringify(json)
+        }).then(jsonOrThrow);
 }

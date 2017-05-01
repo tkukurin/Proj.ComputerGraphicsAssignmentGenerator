@@ -31,7 +31,6 @@ function getRenderer(dimensions) {
 }
 
 const wrapper = document.getElementById(WRAPPER_ID);
-console.log(wrapper);
 const dimensionProvider = () => new Dimensions(wrapper.offsetWidth, wrapper.offsetHeight);
 const wrapperDimensions = dimensionProvider();
 

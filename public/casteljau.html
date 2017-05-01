@@ -28,13 +28,17 @@
   <script src="./javascript/problems/DeCasteljau.js"></script>
 
   <script>
+    // TODO entire display2d should be handled async
+    
     getJson('/data/casteljau')
       .then(data => {
           animate();
           constructDeCasteljau(data.map(xy => vec2(xy.x, xy.y)))
             .forEach(composite => scene.add(composite));
-      })
-      .catch(err => console.log(err));
+      }).catch(error => {
+        const errorHtml = constructErrorHtml(error);
+        document.getElementById("container").appendChild(errorHtml);
+      });
   </script>
 </body>
 </html>
