@@ -7,6 +7,7 @@
     * {
       margin: 0;
       padding: 0;
+      position: relative;
     }
     
     body {
@@ -19,16 +20,23 @@
       overflow-y: hidden;
     }
 
-    body canvas {
+    /*body canvas {
       left: 0;
       top: 0;
       margin: 0;
       padding: 0;
+    }*/
+
+    #wrap {
+      width: 500px;
+      height: 500px;
     }
   </style>
 </head>
 
 <body>
+  <h1>Casteljau</h1>
+
   <div id="wrap"></div>
 
   <script src="https://rawgithub.com/mrdoob/three.js/master/build/three.js"></script>
