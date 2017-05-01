@@ -10,12 +10,6 @@ class ScreenMovementHandler {
         this.onMouseup = this.onMouseup.bind(this);
         this.onMousemove = this.onMousemove.bind(this);
         this.onMousewheel = this.onMousewheel.bind(this);
-
-        container.addEventListener('mousedown', this.onMousedown);
-        container.addEventListener('mouseup', this.onMouseup);
-        container.addEventListener('mousemove', this.onMousemove);
-        container.addEventListener('wheel', this.onMousewheel);
-        container.oncontextmenu = e => e.preventDefault();
     }
 
     onMousedown(e) {

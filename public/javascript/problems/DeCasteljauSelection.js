@@ -11,10 +11,6 @@ class DeCasteljauSelection {
         this.onMousedown = this.onMousedown.bind(this);
         this.onKeyup = this.onKeyup.bind(this);
         this.trySelectFirstPoint = this.trySelectFirstPoint.bind(this);
-        
-        container.addEventListener('mousemove', this.onMousemove, false);
-        container.addEventListener('mousedown', this.onMousedown, false);
-        document.addEventListener('keyup', this.onKeyup);
     }
 
     onMousemove(e) {
@@ -32,7 +28,7 @@ class DeCasteljauSelection {
     trySelectFirstPoint(e) {
         if (e.which != LEFT_MOUSE_BUTTON) return;
 
-        const found = intersectionFinder.getIntersections(e.clientX, e.clientY, this.composites)
+        const found = this.intersectionFinder.getIntersections(e.clientX, e.clientY, this.composites)
                 .map(o => o.object)
                 .filter(obj => isIntersectPoint(obj))
                 .find(o => o);
@@ -49,7 +45,7 @@ class DeCasteljauSelection {
         if (!this.selectedPoint) return this.trySelectFirstPoint(e);
         if (e.which != LEFT_MOUSE_BUTTON) return;
 
-        const selectedPoint2 = intersectionFinder.getIntersections(e.clientX, e.clientY, this.composites)
+        const selectedPoint2 = this.intersectionFinder.getIntersections(e.clientX, e.clientY, this.composites)
                 .map(o => o.object)
                 .filter(obj => isIntersectPoint(obj))
                 .find(o => o);

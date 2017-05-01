@@ -19,11 +19,7 @@ class HelperLinesHandler {
 
         this.axes.forEach(axis => scene.add(axis));
         this.positionDataElement = createTextDisplay();
-
-        container.appendChild(this.positionDataElement);
-
         this.onMousemove = this.onMousemove.bind(this);
-        container.addEventListener('mousemove', this.onMousemove);
     }
 
     onMousemove(e) {

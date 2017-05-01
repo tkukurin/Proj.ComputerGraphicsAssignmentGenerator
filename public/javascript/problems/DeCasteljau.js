@@ -118,7 +118,8 @@ function makeUnselectedPoint(point) {
     if (!point) return point;
 
     point.remove(point.children[0]);
-    return point;
+    
+    return undefined;
 }
 
 function createNewLine(selectedPoint1, selectedPoint2) {
