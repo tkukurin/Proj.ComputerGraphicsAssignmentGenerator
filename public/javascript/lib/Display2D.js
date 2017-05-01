@@ -30,7 +30,7 @@ function getRenderer(dimensions) {
     return renderer;
 }
 
-const wrapper = document.getElementById(WRAPPER_ID);
+/*const wrapper = document.getElementById(WRAPPER_ID);
 const dimensionProvider = () => new Dimensions(wrapper.offsetWidth, wrapper.offsetHeight);
 const wrapperDimensions = dimensionProvider();
 
@@ -49,4 +49,4 @@ const helperLinesHandler = new HelperLinesHandler(true, grid, intersectionFinder
 function animate() {
     requestAnimationFrame(animate);
     renderer.render(scene, camera);
-}
+}*/

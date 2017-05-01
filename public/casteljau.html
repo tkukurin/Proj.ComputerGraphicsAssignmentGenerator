@@ -25,16 +25,38 @@
   <script src="./javascript/lib/ScreenMovementHandler.js"></script>
   <script src="./javascript/lib/Display2D.js"></script>
   <script src="./javascript/lib/ResizeHandler.js"></script>
+  <script src="./javascript/problems/DeCasteljauSelection.js"></script>
   <script src="./javascript/problems/DeCasteljau.js"></script>
 
   <script>
-    // TODO entire display2d should be handled async
-    
     getJson('/data/casteljau')
       .then(data => {
+          const wrapper = document.getElementById(WRAPPER_ID);
+          const dimensionProvider = () => new Dimensions(wrapper.offsetWidth, wrapper.offsetHeight);
+          const wrapperDimensions = dimensionProvider();
+
+          const renderer = getRenderer(wrapperDimensions);
+          const scene = new THREE.Scene();
+          const camera = default2DCamera(PIXELS_PER_UNIT, wrapperDimensions);
+          const grid = construct2DGrid(MAX_AXIS_VALUE, CENTER_LINE_COLOR, GRID_COLOR);
+
+          wrapper.appendChild(renderer.domElement);
+          scene.add(grid);
+
+          const movementHandler = new ScreenMovementHandler(wrapper, renderer, camera, RIGHT_MOUSE_BUTTON);
+          const intersectionFinder = new IntersectionFinder(camera, renderer.context.canvas.getBoundingClientRect(), new THREE.Raycaster());
+          const helperLinesHandler = new HelperLinesHandler(true, grid, intersectionFinder, wrapper, scene, MAX_AXIS_VALUE);
+          const casteljauSelection = new DeCasteljauSelection(document, wrapper, scene, intersectionFinder);
+
+          window.addEventListener('resize', onWindowResize(PIXELS_PER_UNIT, dimensionProvider, intersectionFinder, camera, renderer), false);
+
+          function animate() {
+              requestAnimationFrame(animate);
+              renderer.render(scene, camera);
+          }
+
           animate();
-          constructDeCasteljau(data.map(xy => vec2(xy.x, xy.y)))
-            .forEach(composite => scene.add(composite));
+          constructDeCasteljau(data.map(xy => vec2(xy.x, xy.y))).forEach(composite => scene.add(composite));
       }).catch(error => {
         const errorHtml = constructErrorHtml(error);
         document.getElementById("container").appendChild(errorHtml);

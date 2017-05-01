@@ -44,10 +44,6 @@ function constructDeCasteljau(points) {
     return composites;
 }
 
-var selected = undefined;
-var selectedPoint = undefined;
-const composites = scene.children;
-
 function createDivisions(selected, numDivisions) {
     const composite = new THREE.Object3D();
     const endpoints = selected.userData.endpoints;
@@ -122,45 +118,8 @@ function makeUnselectedPoint(point) {
     if (!point) return point;
 
     point.remove(point.children[0]);
-    selectedPoint = undefined;
-
     return point;
 }
-
-document.addEventListener('keyup', keyEvent => {
-    const key = keyEvent.key;
-    const keyAsInteger = parseInt(key);
-
-    if (!keyAsInteger || !selected) return;
-
-    makeUnselectedPoint(selectedPoint);
-    
-    const newPointsComposite = createDivisions(selected, keyAsInteger);
-    const existingIntersectPointsComposite = findExistingIntersectPoints(selected.children);
-
-    if (existingIntersectPointsComposite) {        
-        if (existingIntersectPointsComposite.userData.connectedLine) {
-            existingIntersectPointsComposite.userData.connectedLine.forEach(line => scene.remove(line));
-        }
-
-        selected.remove(existingIntersectPointsComposite);
-        scene.remove(existingIntersectPointsComposite);
-    }
-
-    selected.add(newPointsComposite);
-});
-
-document.addEventListener('mousemove', e => {
-    makeUnselected(selected);
-
-    const intersect = intersectionFinder.getIntersections(e.clientX, e.clientY, composites)
-            .map(o => o.object)
-            .filter(o => o.userData.isSplittable)
-            .map(o => o.parent)
-            .find(parent => parent);
-            
-    selected = makeSelected(intersect);
-}, false);
 
 function createNewLine(selectedPoint1, selectedPoint2) {
     const pos1 = pointLocation(selectedPoint1);
@@ -182,33 +141,3 @@ function createNewLine(selectedPoint1, selectedPoint2) {
     return lineComposite;
 }
 
-function trySelectFirstPoint(e) {
-    if (e.which != LEFT_MOUSE_BUTTON) return;
-
-    const found = intersectionFinder.getIntersections(e.clientX, e.clientY, composites)
-            .map(o => o.object)
-            .filter(obj => isIntersectPoint(obj))
-            .find(o => o);
-
-    if (!found) {
-        return makeUnselectedPoint(selectedPoint);
-    }
-
-    selectedPoint = makeSelectedPoint(found);
-}
-
-document.addEventListener('mousedown', e => {
-    if (!selectedPoint) return trySelectFirstPoint(e);
-    if (e.which != LEFT_MOUSE_BUTTON) return;
-
-    const selectedPoint2 = intersectionFinder.getIntersections(e.clientX, e.clientY, composites)
-            .map(o => o.object)
-            .filter(obj => isIntersectPoint(obj))
-            .find(o => o);
-
-    const oldSelectedPoint = makeUnselectedPoint(selectedPoint);
-    if (selectedPoint2) {
-        const lineComposite = createNewLine(oldSelectedPoint, selectedPoint2);
-        scene.add(lineComposite);
-    }
-}, false);

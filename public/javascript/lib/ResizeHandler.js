@@ -23,11 +23,3 @@ function onWindowResize(pixelsPerUnit, wrapperDimensionProvider, intersectionFin
     };
 }
 
-window.addEventListener('resize', 
-    onWindowResize(
-        PIXELS_PER_UNIT, 
-        () => toDimensions(window),
-        intersectionFinder, 
-        camera,
-        renderer), false);
-
