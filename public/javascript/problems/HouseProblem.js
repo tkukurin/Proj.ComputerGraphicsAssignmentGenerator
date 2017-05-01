@@ -1,4 +1,36 @@
+const wrapper = document.getElementById(WRAPPER_ID);
+const dimensionProvider = () => new Dimensions(wrapper.offsetWidth, wrapper.offsetHeight);
+const wrapperDimensions = dimensionProvider();
 
+const renderer = getRenderer(wrapperDimensions);
+const scene = new THREE.Scene();
+const camera = default2DCamera(PIXELS_PER_UNIT, wrapperDimensions);
+const grid = construct2DGrid(MAX_AXIS_VALUE, CENTER_LINE_COLOR, GRID_COLOR);
+const snapToGrid = false;
+
+wrapper.appendChild(renderer.domElement);
+scene.add(grid);
+
+const movementHandler = new ScreenMovementHandler(wrapper, renderer, camera, RIGHT_MOUSE_BUTTON);
+document.addEventListener('mousedown', movementHandler.onMousedown);
+document.addEventListener('mouseup', movementHandler.onMouseup);
+document.addEventListener('mousemove', movementHandler.onMousemove);
+document.addEventListener('wheel', movementHandler.onMousewheel);
+document.oncontextmenu = e => e.preventDefault();
+
+const intersectionFinder = new IntersectionFinder(camera, renderer.context.canvas.getBoundingClientRect(), new THREE.Raycaster());
+
+const helperLinesHandler = new HelperLinesHandler(snapToGrid, grid, intersectionFinder, wrapper, scene, MAX_AXIS_VALUE);
+document.addEventListener('mousemove', helperLinesHandler.onMousemove);
+wrapper.appendChild(helperLinesHandler.positionDataElement);
+window.addEventListener('resize', onWindowResize(PIXELS_PER_UNIT, dimensionProvider, intersectionFinder, camera, renderer), false);
+
+function animate() {
+    requestAnimationFrame(animate);
+    renderer.render(scene, camera);
+}
+
+animate();
 
 const defaultMaterial = { color: LINE_COLOR_UNSELECTED, linewidth: 2 };
 
