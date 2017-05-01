@@ -1,5 +1,8 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  div(id="container")
+    h1= title
+    ul
+      li
+        a(href="./casteljau", title="Casteljau example") Casteljau
