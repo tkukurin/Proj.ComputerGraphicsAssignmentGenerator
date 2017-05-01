@@ -79,16 +79,6 @@ function quadrilateral(A, B, C, D, materialProperties) {
     return getWireframe(geometry, materialProperties);
 }
 
-/*
-function square(A, width, height, materialProperties) {
-    const geometry = new THREE.Geometry();
-    const D = vec2(A.x + width, A.y);
-    const B = vec2(A.x, A.y + height);
-    const C = vec2(A.x + width, A.x + height);
-
-    return quadrilateral(A, B, C, D, materialProperties);
-}*/
-
 function square(loc, dim, materialProperties) {
     const material = new THREE.MeshBasicMaterial({ color: 0x000000 });
     const geometry = new THREE.BoxGeometry(dim.width, dim.height, DEFAULT_Z_2D);

@@ -1,6 +1,6 @@
 
 class DeCasteljauSelection {
-    constructor(document, container, scene, intersectionFinder) {
+    constructor(container, scene, intersectionFinder) {
         this.selectedLine = undefined;
         this.selectedPoint = undefined;
         this.composites = scene.children;
@@ -11,6 +11,15 @@ class DeCasteljauSelection {
         this.onMousedown = this.onMousedown.bind(this);
         this.onKeyup = this.onKeyup.bind(this);
         this.trySelectFirstPoint = this.trySelectFirstPoint.bind(this);
+    }
+
+    collectData() {
+        const lines = this.composites
+            .filter(obj => obj.userData.isUserCreated)
+            .map(obj => obj.userData.endpoints);    
+        const selectedFinalPoint = pointLocation(this.selectedPoint);
+
+        return { lines, selectedFinalPoint };
     }
 
     onMousemove(e) {
@@ -55,6 +64,8 @@ class DeCasteljauSelection {
         
         if (selectedPoint2) {
             const lineComposite = createNewLine(oldSelectedPoint, selectedPoint2);
+            lineComposite.userData.isUserCreated = true;
+
             this.scene.add(lineComposite);
         }
     }

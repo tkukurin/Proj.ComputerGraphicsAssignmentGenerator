@@ -16,8 +16,8 @@ function jsonOrThrow(response) {
     if (response.ok) 
         return response.json();
 
-    throw { status: response.status, 
-            message: response.statusText };
+    throw { status: response.status || "nepoznat status", 
+            message: response.statusText || "Nešto je pošlo po zlu" };
 }
 
 function getJson(endpoint) {

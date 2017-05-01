@@ -10,7 +10,7 @@ class IntersectionFinder {
     }
 
     getIntersections(clientX, clientY, objects) {
-        const pos = toWorldCoordinates(clientX, clientY, this.containerDimensions);
+        const pos = toNormalizedWindowCoordinates(clientX, clientY, this.containerDimensions);
         this.raycaster.setFromCamera(pos, this.camera);
 
         return this.raycaster.intersectObjects(objects, true);

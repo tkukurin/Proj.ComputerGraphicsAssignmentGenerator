@@ -26,8 +26,8 @@ class ScreenMovementHandler {
         if (!this.panPosition) return;
 
         const containerDimensions = this.renderer.context.canvas.getBoundingClientRect();
-        const oldMouse = toWorldCoordinates(this.panPosition.x, this.panPosition.y, containerDimensions);
-        const currentMouse = toWorldCoordinates(e.pageX, e.pageY, containerDimensions);
+        const oldMouse = toNormalizedWindowCoordinates(this.panPosition.x, this.panPosition.y, containerDimensions);
+        const currentMouse = toNormalizedWindowCoordinates(e.pageX, e.pageY, containerDimensions);
 
         const dx = (currentMouse.x - oldMouse.x) * (this.camera.right - this.camera.left) / (2 * this.camera.zoom);
         const dy = (currentMouse.y - oldMouse.y) * (this.camera.top - this.camera.bottom) / (2 * this.camera.zoom);

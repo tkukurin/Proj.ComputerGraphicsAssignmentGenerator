@@ -10,7 +10,9 @@
   <div id="container">
     <h1>Casteljau</h1>
 
-    <p>Ovdje može ići neki opis zadatka.</p>
+    <p>Skrolanjem se zumira, desni klik pomiče kameru. Brojevima se rade točke na linijama.</p>
+
+    <a href="#" onclick="logResults()">Link koji logira rezultate.</a>
 
     <div id="wrap"></div>
   </div>
@@ -29,6 +31,11 @@
   <script src="./javascript/problems/DeCasteljau.js"></script>
 
   <script>
+    var studentResultsProvider;
+    function logResults() {
+      console.log(studentResultsProvider());
+    }
+
     getJson('/data/casteljau')
       .then(data => {
           const wrapper = document.getElementById(WRAPPER_ID);
@@ -57,9 +64,9 @@
           document.addEventListener('mousemove', helperLinesHandler.onMousemove);
           wrapper.appendChild(helperLinesHandler.positionDataElement);
 
-          const casteljauSelection = new DeCasteljauSelection(document, wrapper, scene, intersectionFinder);
-          document.addEventListener('mousemove', casteljauSelection.onMousemove, false);
-          document.addEventListener('mousedown', casteljauSelection.onMousedown, false);
+          const casteljauSelection = new DeCasteljauSelection(wrapper, scene, intersectionFinder);
+          wrapper.addEventListener('mousemove', casteljauSelection.onMousemove, false);
+          wrapper.addEventListener('mousedown', casteljauSelection.onMousedown, false);
           document.addEventListener('keyup', casteljauSelection.onKeyup);
 
           window.addEventListener('resize', onWindowResize(PIXELS_PER_UNIT, dimensionProvider, intersectionFinder, camera, renderer), false);
@@ -71,6 +78,8 @@
 
           animate();
           constructDeCasteljau(data.map(xy => vec2(xy.x, xy.y))).forEach(composite => scene.add(composite));
+
+          studentResultsProvider = () => casteljauSelection.collectData();
       }).catch(error => {
         const errorHtml = constructErrorHtml(error);
         document.getElementById("container").appendChild(errorHtml);

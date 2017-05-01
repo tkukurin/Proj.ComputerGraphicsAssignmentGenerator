@@ -51,7 +51,7 @@ function _getCursorPosition(clientX, clientY, containerDimensions) {
         return {x, y};
 }
 
-function toWorldCoordinates(x, y, containerDimensions) {
+function toNormalizedWindowCoordinates(x, y, containerDimensions) {
     const realPos = _getCursorPosition(x, y, containerDimensions);
     return new THREE.Vector2( (realPos.x / containerDimensions.width) * 2 - 1, 
                              -(realPos.y / containerDimensions.height) * 2 + 1);
