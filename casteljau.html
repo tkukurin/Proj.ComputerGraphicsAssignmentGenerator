@@ -20,24 +20,31 @@
       overflow-y: hidden;
     }
 
-    /*body canvas {
-      left: 0;
-      top: 0;
-      margin: 0;
-      padding: 0;
-    }*/
+    p {
+      padding: 10px 0;
+    }
+
+    #container {
+      width: 600px; 
+      margin: 10px auto;
+    }
 
     #wrap {
       width: 500px;
       height: 500px;
+      border: 1px solid #e3e3e3;
     }
   </style>
 </head>
 
 <body>
-  <h1>Casteljau</h1>
+  <div id="container">
+    <h1>Casteljau</h1>
 
-  <div id="wrap"></div>
+    <p>Ovdje može ići neki opis zadatka.</p>
+
+    <div id="wrap"></div>
+  </div>
 
   <script src="https://rawgithub.com/mrdoob/three.js/master/build/three.js"></script>
   <script src="./lib/Constants.js"></script>
