@@ -1,2 +1,0 @@
-http://jsfiddle.net/nhvff8ra/6/
---> example of getting world coordinates (ico)
