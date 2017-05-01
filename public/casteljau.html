@@ -3,38 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <title>App</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      position: relative;
-    }
-    
-    body {
-      font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-      color: #333;
-    }
-
-    body, #wrap {
-      overflow-x: hidden;
-      overflow-y: hidden;
-    }
-
-    p {
-      padding: 10px 0;
-    }
-
-    #container {
-      width: 600px; 
-      margin: 10px auto;
-    }
-
-    #wrap {
-      width: 500px;
-      height: 500px;
-      border: 1px solid #e3e3e3;
-    }
-  </style>
+  <link rel="stylesheet" href="stylesheets/style.css">
 </head>
 
 <body>
@@ -59,11 +28,11 @@
   <script src="./javascript/problems/DeCasteljau.js"></script>
 
   <script>
-    animate();
     getJson('/data/casteljau')
       .then(data => {
-          // translate data to coordinates
-          // startAssignment(data);
+          animate();
+          constructDeCasteljau(data.map(xy => vec2(xy.x, xy.y)))
+            .forEach(composite => scene.add(composite));
       })
       .catch(err => console.log(err));
   </script>

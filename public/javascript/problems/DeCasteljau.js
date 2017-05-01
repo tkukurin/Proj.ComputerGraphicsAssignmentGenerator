@@ -44,15 +44,8 @@ function constructDeCasteljau(points) {
     return composites;
 }
 
-const A = vec2(12, 20);
-const B = vec2(-1, -3);
-const C = vec2(-12, -11);
-const D = vec2(-25, 29);
-
 var selected = undefined;
 var selectedPoint = undefined;
-
-constructDeCasteljau([A, B, C, D]).forEach(composite => scene.add(composite));
 const composites = scene.children;
 
 function createDivisions(selected, numDivisions) {
